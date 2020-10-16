@@ -25,6 +25,7 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
         val currentItem = schoolList[position]
 
         holder.schoolView.text = currentItem.schoolName
+        if(holder.schoolView.text.length>40) holder.schoolView.text
         holder.itemView.animation = AnimationUtils.loadAnimation(holder.itemView.context,R.anim.fade_translate) // minimal animation
         // The less is done here, the better the performance, since onBindViewHolder is called frequently.
     }

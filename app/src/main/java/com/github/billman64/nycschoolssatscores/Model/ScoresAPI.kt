@@ -10,5 +10,5 @@ interface ScoresAPI {
 
     @Headers(value = ["X-App-Token: insertApiToken"])
     @GET("?\$select=dbn,num_of_sat_test_takers,sat_critical_reading_avg_score,sat_math_avg_score,sat_writing_avg_score")
-    fun getSchools(): retrofit2.Call<JsonObject>
+    fun getSchools(): retrofit2.Call<JsonArray>
 }

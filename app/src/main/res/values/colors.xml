@@ -4,9 +4,8 @@
     <color name="colorPrimaryDark">#224400</color>
     <color name="colorAccent">#00FFEF</color>
 
-    <color name="viewBack">#9241</color>
+    <color name="viewBack">#9291</color>
     <color name="sortText">#888</color>
-    <color name="word">#134FE6</color>
-    <color name="definition">#333</color>
-    <color name="thumb">#000</color>
+    <color name="schoolName">#333</color>
+    <color name="detail">#555</color>
 </resources>

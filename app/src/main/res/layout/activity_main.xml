@@ -8,23 +8,14 @@
     android:background="@drawable/definition">
 
 
-    <LinearLayout
-        android:id="@+id/search_layout"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:gravity="center"
-        app:layout_constraintTop_toTopOf="parent"
-        android:paddingTop="32dp"
-        android:paddingBottom="32dp"
-        android:background="@color/viewBack">
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent" />
 
 
@@ -32,8 +23,9 @@
             android:id="@+id/refreshButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
-            app:layout_constraintLeft_toRightOf="@+id/recyclerView"
+            app:layout_constraintTop_toBottomOf="@+id/recyclerView"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="24dp"
@@ -46,7 +38,6 @@
 
         <!-- TODO:// fix: icon does not show on a small screen (3.3 WQVGA) Possible foregroundTint alternative needed. -->
 
-    </LinearLayout>
 
 
 

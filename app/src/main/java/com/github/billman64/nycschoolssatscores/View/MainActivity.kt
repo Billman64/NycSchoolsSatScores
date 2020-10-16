@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.billman64.nycschoolssatscores.Model.School
@@ -21,7 +22,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
-    val TAG:String = "Chase demo"
+    val TAG:String = "SAT data demo"
     private var schoolList = ArrayList<School>()
 
 
@@ -78,16 +79,29 @@ class MainActivity : AppCompatActivity() {
 
                     // add each school object to list before updating recyclerView
                     for(i in 0 until data.size()){
-                        var s = School(
+                        val s = School(
                             data[i].asJsonObject.get("dbn").toString(),
-                            data[i].asJsonObject.get("school_name").toString()
+                            data[i].asJsonObject.get("school_name").toString().replace("Â","") //replace("^\"|\"$","")
                         )
+
+                        // Truncate quote marks at the start and end of school name
+                        val temp:String = s.schoolName
+//                        Log.d(TAG, " !!! temp first char: ${temp.substring(0,1)}")
+                        Log.d(TAG, " !!! temp last char: ${temp.substring(temp.length-1,temp.length)}")
+                        if(temp.substring(0,1).equals("\"") and temp.substring(temp.length-1,temp.length).equals("\"")){
+                            s.schoolName = temp.substring(1,temp.length-1)
+                            if(s.schoolName.substring(1,2) == "Ac") Log.d(TAG, " !!! school name: ${s.schoolName}")
+                        }
+
                         schoolList.add(s)
                     }
                     Log.d(TAG, " school list count: ${schoolList.count()}")
 
                     withContext(Dispatchers.Main){
                         progress_bar.visibility = View.GONE
+                        Toast.makeText(applicationContext,"schools found: ${schoolList.count()}", Toast.LENGTH_SHORT).show()
+                        // sort
+                        schoolList.sortBy { it.schoolName }
                         recyclerView.adapter = SchoolAdapter(schoolList)
                     }
 
@@ -95,17 +109,19 @@ class MainActivity : AppCompatActivity() {
                     Log.d(TAG, " Not successful. ErrorBody(): ${responseSchools.errorBody().toString().substring(0,100)}")
                     withContext(Dispatchers.Main){
                         progress_bar.visibility = View.GONE
+                        refreshButton.visibility = View.VISIBLE
                     }
 
                 }
 
 
             } catch(e:Exception){
-                Log.d(TAG, "Net error: ${e.toString().substring(0,105)}")
+                Log.d(TAG, "Net error: ${e.toString().substring(0,70)}")
 
                 // update UI
                 withContext(Dispatchers.Main){
                     progress_bar.visibility = View.GONE
+                    refreshButton.visibility = View.VISIBLE
                 }
 
             }
