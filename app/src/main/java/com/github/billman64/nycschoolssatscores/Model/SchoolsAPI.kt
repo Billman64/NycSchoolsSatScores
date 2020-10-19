@@ -8,7 +8,7 @@ import retrofit2.http.Headers
 
 interface SchoolsAPI {
 
-    @Headers(value = ["X-App-Token: apiKey"])
+    @Headers(value = ["X-App-Token: insertApiToken"])
     @GET("s3k6-pzi2.json?\$select=dbn,school_name")
     fun getSchools(): retrofit2.Call<JsonArray>
 

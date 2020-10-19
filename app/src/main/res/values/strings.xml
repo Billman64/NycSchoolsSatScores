@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">NycSchoolsSatScores</string>
     <string name="sort">sort:</string>
+    <string name="SAT_data">SAT scores</string>
 </resources>

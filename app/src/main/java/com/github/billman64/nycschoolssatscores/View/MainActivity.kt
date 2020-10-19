@@ -86,8 +86,7 @@ class MainActivity : AppCompatActivity() {
 
                         // Truncate quote marks at the start and end of school name
                         val temp:String = s.schoolName
-//                        Log.d(TAG, " !!! temp first char: ${temp.substring(0,1)}")
-                        Log.d(TAG, " !!! temp last char: ${temp.substring(temp.length-1,temp.length)}")
+
                         if(temp.substring(0,1).equals("\"") and temp.substring(temp.length-1,temp.length).equals("\"")){
                             s.schoolName = temp.substring(1,temp.length-1)
                             if(s.schoolName.substring(1,2) == "Ac") Log.d(TAG, " !!! school name: ${s.schoolName}")
