@@ -2,4 +2,9 @@
     <string name="app_name">NycSchoolsSatScores</string>
     <string name="sort">sort:</string>
     <string name="SAT_data">SAT scores</string>
+    <string name="reading">Reading:</string>
+    <string name="math">Math:</string>
+    <string name="writing">Writing:</string>
+    <string name="dialog_title">SAT Scores</string>
+
 </resources>

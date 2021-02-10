@@ -21,8 +21,14 @@ import retrofit2.awaitResponse
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.Exception
 
+/* NYC SAT Scores API call demo
+**  @author: Bill Lugo
+**   Copyrights:
+**   Background photo by Devon Delrio is licensed under Creative Commons CC0 (Public Domain). Source: https://pixy.org/107734/
+ */
+
 class MainActivity : AppCompatActivity() {
-    val TAG:String = "SAT data demo"
+    val TAG:String = "SAT data demo" + this.javaClass.simpleName
     private var schoolList = ArrayList<School>()
 
 
@@ -35,7 +41,9 @@ class MainActivity : AppCompatActivity() {
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = SchoolAdapter(ArrayList())
 
-        getSchoolData()
+//        getSchoolData()
+
+        refreshButton.visibility = View.VISIBLE
 
         refreshButton.setOnClickListener{
             getSchoolData()
@@ -102,10 +110,26 @@ class MainActivity : AppCompatActivity() {
                         // sort
                         schoolList.sortBy { it.schoolName }
                         recyclerView.adapter = SchoolAdapter(schoolList)
+
+                        refreshButton.visibility = View.GONE
                     }
 
-                } else {    // handling for connected but not successful
-                    Log.d(TAG, " Not successful. ErrorBody(): ${responseSchools.errorBody().toString().substring(0,100)}")
+                } else {
+
+                    // handling for connected but not successful
+                    if(responseSchools.errorBody()?.contentLength()?:0 >= 70) {
+                        Log.d(TAG," Not successful. ErrorBody(): ${responseSchools.errorBody().toString().substring(0, 70)}")
+                    }
+                    else {
+                        Log.d(TAG, " Not successful. ErrorBody(): ${responseSchools.errorBody().toString()}")
+                    }
+
+                    // response to http status code 403 (forbidden)
+                    if(responseSchools.code() == 403) {
+                        Log.d(TAG, " Possibly a bad or missing api key!")
+                    }
+
+                    // update UI
                     withContext(Dispatchers.Main){
                         progress_bar.visibility = View.GONE
                         refreshButton.visibility = View.VISIBLE
@@ -115,7 +139,16 @@ class MainActivity : AppCompatActivity() {
 
 
             } catch(e:Exception){
-                Log.d(TAG, "Net error: ${e.toString().substring(0,70)}")
+                if(e.toString().length>=50) {
+                    Log.d(TAG, "Net error: ${e.toString().substring(0,50)}")
+                } else {
+                    Log.d(TAG, "Net error: $e")
+                }
+                Log.d(TAG, "message: ${e.message}")
+
+                //TODO: handling for no api key?
+
+
 
                 // update UI
                 withContext(Dispatchers.Main){

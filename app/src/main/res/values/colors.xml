@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#229900</color>
     <color name="colorPrimaryDark">#224400</color>
-    <color name="colorAccent">#00FFEF</color>
+    <color name="colorAccent">#EE0</color>
 
     <color name="viewBack">#9291</color>
     <color name="sortText">#888</color>
