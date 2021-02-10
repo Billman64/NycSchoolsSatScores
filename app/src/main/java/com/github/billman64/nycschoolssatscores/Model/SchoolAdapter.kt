@@ -86,7 +86,7 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(ScoresAPI::class.java)
-            Log.d(TAG, "Retrofit for scores api created: $scoresApi.toString()")
+            Log.d(TAG, "Retrofit for scores api created: ${scoresApi.toString()}")
 
 
             // API call via coroutine
@@ -94,17 +94,21 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
 
                 try {
                     val responseScores = scoresApi.getScores(schoolList[position].dbn).awaitResponse()
-                    Log.d(TAG," response received. code: ${responseScores.code()} size: ${responseScores.message()}")
+                    Log.d(TAG," response received. code: ${responseScores.code()} message: ${responseScores.message()}")
 
                     if(responseScores.isSuccessful){
-                        Log.d(TAG, " response is successful")
 
                         val data = responseScores.body()!!.asJsonArray
-                        Log.d(TAG, " response stored")
+
+
+                        Log.d(TAG, " response stored. Data size: ${data.size()} count: ${data.count()} string: ${data.toString()}")
+                        Log.d(TAG, " Data: ${data.toString()}")
 
                         Log.d(TAG, " isJsonArray: ${data.isJsonArray()}  isJsonObject: ${data.isJsonObject()}")     // it's a jsonArray
 
-                        var reading = data.asJsonArray.get(0).asJsonObject.get("sat_critical_reading_avg_score").toString()        //TODO: fix error here
+                        val dataObject = data[0].asJsonObject       //TODO: fix error here
+                        Log.d(TAG, "dataObject size: ${dataObject.size()}")
+                        var reading = dataObject.get("sat_critical_reading_avg_score").toString()        //TODO: fix error here
 
 
                         Log.d(TAG, "Mean reading score: " + reading)
@@ -114,7 +118,6 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
 
                 } catch(e:Exception){
                     Log.d(TAG, " network error: " + e.toString())
-
                 }
 
 
