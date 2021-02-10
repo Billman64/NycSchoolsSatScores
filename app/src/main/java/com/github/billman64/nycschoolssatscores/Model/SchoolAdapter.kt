@@ -20,6 +20,7 @@ import kotlinx.android.synthetic.main.school_item.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.awaitResponse
 import retrofit2.converter.gson.GsonConverterFactory
@@ -72,7 +73,7 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
             Log.d(TAG, "item clicked: ${holder.schoolView.text} dbn: ${schoolList[position].dbn}  pos: ${holder.adapterPosition} length: ${holder.schoolView.length()} textSize: ${holder.schoolView.textSize}")
 //            val i: Intent(applicationContext, SchoolInfoActivity)
 
-            var d = Dialog(holder.schoolView.context)
+            val d = Dialog(holder.schoolView.context)
             d.setContentView(R.layout.dialog)
             d.setTitle(R.string.dialog_title)
             d.school.text = holder.schoolView.text
@@ -93,7 +94,12 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
             GlobalScope.launch(Dispatchers.IO){
 
                 try {
-                    val responseScores = scoresApi.getScores(schoolList[position].dbn).awaitResponse()
+                    var dbn = schoolList[position].dbn
+                    Log.d(TAG, "dbn: $dbn")
+                    dbn = dbn.substring(1,dbn.length-1) // remove quote marks
+
+
+                    val responseScores = scoresApi.getScores(dbn).awaitResponse()
                     Log.d(TAG," response received. code: ${responseScores.code()} message: ${responseScores.message()}")
 
                     if(responseScores.isSuccessful){
@@ -108,27 +114,28 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
 
                         val dataObject = data[0].asJsonObject       //TODO: fix error here
                         Log.d(TAG, "dataObject size: ${dataObject.size()}")
-                        var reading = dataObject.get("sat_critical_reading_avg_score").toString()        //TODO: fix error here
+                        val reading = dataObject.get("sat_critical_reading_avg_score").toString()        //TODO: fix error here
 
 
                         Log.d(TAG, "Mean reading score: " + reading)
 
-                    }
+                        withContext(Dispatchers.Main){
 
+                            d.reading.text = dataObject.get("sat_critical_reading_avg_score").asString
+                            d.math.text = dataObject.get("sat_math_avg_score").asString
+                            d.writing.text = dataObject.get("sat_writing_avg_score").asString
+                            d.test_takers.text = dataObject.get("num_of_sat_test_takers").asString
+                            d.show()
+                        }
+                    }
 
                 } catch(e:Exception){
                     Log.d(TAG, " network error: " + e.toString())
                 }
 
-
-
             }
                 Log.d(TAG, "coroutine")
 
-
-
-
-            d.show()
         })
     }
 

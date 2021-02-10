@@ -19,11 +19,12 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="24dp"
         android:visibility="gone"
-        android:text="View schools"
+        android:text="@string/button_text"
         style="@style/Detail"
         android:background="@drawable/rounded_corners"
-        android:foreground="@drawable/ic_refresh_black_24dp"
         android:nextFocusForward="@id/recyclerView"/>
+
+        <!--    android:foreground="@drawable/ic_refresh_black_24dp"-->
 
     <!-- TODO:// fix: icon does not show on a small screen (3.3 WQVGA) Possible foregroundTint alternative needed. -->
 
