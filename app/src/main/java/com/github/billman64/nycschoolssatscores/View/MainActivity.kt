@@ -41,19 +41,11 @@ class MainActivity : AppCompatActivity() {
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = SchoolAdapter(ArrayList())
 
-//        getSchoolData()
-
-        refreshButton.visibility = View.VISIBLE
-
+        // button action
         refreshButton.setOnClickListener{
             getSchoolData()
         }
-
-
-
     }
-
-
 
 
     fun getSchoolData(){
@@ -63,19 +55,19 @@ class MainActivity : AppCompatActivity() {
         progress_bar.isShown
 
         // Retrofit builder
-        val schoolApi =Retrofit.Builder()
+        val schoolApi = Retrofit.Builder()
             .baseUrl("https://data.cityofnewyork.us/resource/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(SchoolsAPI::class.java)
         Log.d(TAG, "Retrofit for schools api created: $schoolApi.toString()")
 
-        // API call via coroutine
+        // Coroutine for API call
         GlobalScope.launch(Dispatchers.IO){
-            Log.d(TAG, "coroutine")
+            Log.d(TAG, "Coroutine - calling API for SAT scores.")
 
             try{
-                val responseSchools = schoolApi.getSchools().awaitResponse()    //TODO: ERROR - expected gson.JsonObject
+                val responseSchools = schoolApi.getSchools().awaitResponse()
                 Log.d(TAG, " response received. code: ${responseSchools.code()} size: ${responseSchools.message()}")
 
                 if(responseSchools.isSuccessful){
@@ -147,8 +139,6 @@ class MainActivity : AppCompatActivity() {
                 Log.d(TAG, "message: ${e.message}")
 
                 //TODO: handling for no api key?
-
-
 
                 // update UI
                 withContext(Dispatchers.Main){

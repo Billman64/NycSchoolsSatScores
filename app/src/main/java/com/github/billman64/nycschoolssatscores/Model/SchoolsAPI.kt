@@ -7,10 +7,7 @@ import retrofit2.http.GET
 import retrofit2.http.Headers
 
 interface SchoolsAPI {
-
-    @Headers(value = ["X-App-Token: insertApiToken "])
+    @Headers(value = ["X-App-Token:  "])
     @GET("s3k6-pzi2.json?\$select=dbn,school_name")
     fun getSchools(): retrofit2.Call<JsonArray>
-
-    //TODO: handling for bad/outdated api token to prevent crash
 }
