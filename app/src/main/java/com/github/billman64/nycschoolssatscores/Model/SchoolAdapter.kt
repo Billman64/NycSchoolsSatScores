@@ -44,9 +44,7 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
 
         holder.schoolView.text = currentItem.schoolName
 
-        // Dynamix text resizing
-//        Log.d(TAG, "${currentItem.schoolName.substring(0,11)}... length: ${currentItem.schoolName.length} textSize: ${holder.schoolView.textSize}")
-
+        // Dynamic text resizing
         when(holder.schoolView.text.length){
             in 1..29 -> {
                 holder.schoolView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
@@ -64,22 +62,13 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
 
         // Make item clickable, calling dialog with SAT scores
         holder.itemView.setOnClickListener( View.OnClickListener {
-//            it.setBackgroundResource(R.drawable.rounded_corners_highlighted) // hightlighting
-//            val readingScore: TextView = findViewById(R.id.reading_score)
-//            readingScore.text = "123"
-//            val reading_score.text = "123"
-
-//            Toast.makeText(, "SAT score data to be implemented",Toast.LENGTH_SHORT).show()
             Log.d(TAG, "item clicked: ${holder.schoolView.text} dbn: ${schoolList[position].dbn}  pos: ${holder.adapterPosition} length: ${holder.schoolView.length()} textSize: ${holder.schoolView.textSize}")
-//            val i: Intent(applicationContext, SchoolInfoActivity)
 
             val d = Dialog(holder.schoolView.context)
             d.setContentView(R.layout.dialog)
             d.setTitle(R.string.dialog_title)
             d.school.text = holder.schoolView.text
             d.reading.text = schoolList[position].dbn
-
-            //TODO: call scoresAPI, use school id # (dbn)
 
             // Retrofit builder
             val scoresApi = Retrofit.Builder()
@@ -89,7 +78,6 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
                 .create(ScoresAPI::class.java)
             Log.d(TAG, "Retrofit for scores api created: ${scoresApi.toString()}")
 
-
             // API call via coroutine
             GlobalScope.launch(Dispatchers.IO){
 
@@ -98,7 +86,6 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
                     Log.d(TAG, "dbn: $dbn")
                     dbn = dbn.substring(1,dbn.length-1) // remove quote marks
 
-
                     val responseScores = scoresApi.getScores(dbn).awaitResponse()
                     Log.d(TAG," response received. code: ${responseScores.code()} message: ${responseScores.message()}")
 
@@ -106,16 +93,14 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
 
                         val data = responseScores.body()!!.asJsonArray
 
-
                         Log.d(TAG, " response stored. Data size: ${data.size()} count: ${data.count()} string: ${data.toString()}")
                         Log.d(TAG, " Data: ${data.toString()}")
 
                         Log.d(TAG, " isJsonArray: ${data.isJsonArray()}  isJsonObject: ${data.isJsonObject()}")     // it's a jsonArray
 
-                        val dataObject = data[0].asJsonObject       //TODO: fix error here
+                        val dataObject = data[0].asJsonObject
                         Log.d(TAG, "dataObject size: ${dataObject.size()}")
-                        val reading = dataObject.get("sat_critical_reading_avg_score").toString()        //TODO: fix error here
-
+                        val reading = dataObject.get("sat_critical_reading_avg_score").toString()
 
                         Log.d(TAG, "Mean reading score: " + reading)
 
@@ -132,13 +117,9 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
                 } catch(e:Exception){
                     Log.d(TAG, " network error: " + e.toString())
                 }
-
             }
                 Log.d(TAG, "coroutine")
-
         })
     }
-
     override fun getItemCount() = schoolList.size   // get # of items in list
-
 }

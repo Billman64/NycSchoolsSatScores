@@ -126,9 +126,7 @@ class MainActivity : AppCompatActivity() {
                         progress_bar.visibility = View.GONE
                         refreshButton.visibility = View.VISIBLE
                     }
-
                 }
-
 
             } catch(e:Exception){
                 if(e.toString().length>=50) {
@@ -147,10 +145,6 @@ class MainActivity : AppCompatActivity() {
                 }
 
             }
-
-
-
-
 
         }
     }

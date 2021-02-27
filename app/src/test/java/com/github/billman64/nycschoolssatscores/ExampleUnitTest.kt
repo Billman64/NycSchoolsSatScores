@@ -3,6 +3,7 @@ package com.github.billman64.nycschoolssatscores
 import android.util.Log
 import com.github.billman64.nycschoolssatscores.Model.School
 import com.github.billman64.nycschoolssatscores.Model.SchoolsAPI
+import com.github.billman64.nycschoolssatscores.Model.ScoresAPI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -61,6 +62,24 @@ class ExampleUnitTest {
                             data.first()!!.asJsonObject!!.has("school_name"))
                 }
                 fail()
+            } catch(e:Exception){
+                fail("Network exception " + e)
+            }
+        }
+    }
+
+    @Test
+    fun satApiIsSuccessful(){
+        val scoresAPI = Retrofit.Builder()
+            .baseUrl("https://data.cityofnewyork.us/resource/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ScoresAPI::class.java)
+
+        GlobalScope.launch(Dispatchers.IO){
+            try{
+                val response = scoresAPI.getScores("").awaitResponse()
+                assert(response.isSuccessful)
             } catch(e:Exception){
                 fail("Network exception " + e)
             }
