@@ -69,6 +69,37 @@ class ExampleUnitTest {
     }
 
     @Test
+    fun satApiFields(){
+        val scoresAPI = Retrofit.Builder()
+            .baseUrl("https://data.cityofnewyork.us/resource/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ScoresAPI::class.java)
+
+        GlobalScope.launch(Dispatchers.IO){
+            try{
+                val response = scoresAPI.getScores("").awaitResponse()
+
+                val data = response.body()?.asJsonArray
+
+                data.let {
+
+                    assert(data?.first()!!.asJsonObject!!.has("dbn") &&
+                            data.first()!!.asJsonObject!!.has("school_name") &&
+                            data.first()!!.asJsonObject!!.has("num_of_sat_test_takers") &&
+                            data.first()!!.asJsonObject!!.has("sat_critical_reading_avg_score") &&
+                            data.first()!!.asJsonObject!!.has("sat_math_avg_score") &&
+                            data.first()!!.asJsonObject!!.has("sat_writing_avg_score")
+                    )
+                }
+                fail()
+            } catch(e:Exception){
+                fail("Network exception " + e)
+            }
+        }
+    }
+
+    @Test
     fun satApiIsSuccessful(){
         val scoresAPI = Retrofit.Builder()
             .baseUrl("https://data.cityofnewyork.us/resource/")
