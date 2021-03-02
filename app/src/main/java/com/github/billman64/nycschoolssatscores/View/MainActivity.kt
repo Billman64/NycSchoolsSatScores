@@ -36,6 +36,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Log whether or not retrieving data from a prior activity instance.
+        savedInstanceState?.let{Log.d(TAG, "onCreate() with a savedInstanceState")} ?: Log.d(TAG, "onCreate()")
+
         // set up recyclerView, which is used to hold list of tappable school names
         val rv:RecyclerView = findViewById(R.id.recyclerView)
         rv.layoutManager = LinearLayoutManager(this)
@@ -45,6 +48,30 @@ class MainActivity : AppCompatActivity() {
         refreshButton.setOnClickListener{
             getSchoolData()
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        // save data for orientation change (TODO: alternatively use a fragment)
+        outState.putParcelableArrayList("list", schoolList)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        val restoreList:ArrayList<School>? = savedInstanceState.getParcelableArrayList("list")
+
+        // If there is data to restore from, then populate the recyclerView with it.
+        restoreList?.let{
+            schoolList = restoreList
+            val rv:RecyclerView = findViewById(R.id.recyclerView)
+            rv.layoutManager = LinearLayoutManager(this)
+            rv.adapter = SchoolAdapter(restoreList)
+
+            refreshButton.visibility = View.GONE
+        }
+
     }
 
 
