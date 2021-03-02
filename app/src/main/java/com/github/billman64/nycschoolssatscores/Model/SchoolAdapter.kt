@@ -64,6 +64,7 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
         holder.itemView.setOnClickListener( View.OnClickListener {
             Log.d(TAG, "item clicked: ${holder.schoolView.text} dbn: ${schoolList[position].dbn}  pos: ${holder.adapterPosition} length: ${holder.schoolView.length()} textSize: ${holder.schoolView.textSize}")
 
+            // Setup dialog
             val d = Dialog(holder.schoolView.context)
             d.setContentView(R.layout.dialog)
             d.setTitle(R.string.dialog_title)

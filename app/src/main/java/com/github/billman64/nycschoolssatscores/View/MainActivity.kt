@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        // save data for orientation change (TODO: alternatively use a fragment)
+        // save data for orientation change (TODO: alternatively use a fragment to hold recyclerView)
         outState.putParcelableArrayList("list", schoolList)
     }
 

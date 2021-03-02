@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
@@ -31,6 +32,16 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp">
 
+        <ImageView
+            android:contentDescription="@string/reading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_baseline_menu_book_24"
+            android:paddingEnd="8dp"
+            android:paddingRight="8dp"
+            android:paddingStart="8dp"
+            android:paddingLeft="8dp"/>
+
         <TextView
             android:id="@+id/reading_label"
             android:layout_width="wrap_content"
@@ -54,6 +65,16 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp">
 
+        <ImageView
+            android:contentDescription="@string/math"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_baseline_calculate_24"
+            android:paddingEnd="8dp"
+            android:paddingRight="8dp"
+            android:paddingStart="8dp"
+            android:paddingLeft="8dp" />
+
         <TextView
             android:id="@+id/math_label"
             android:layout_width="wrap_content"
@@ -76,6 +97,16 @@
         android:orientation="horizontal"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp">
+
+        <ImageView
+            android:contentDescription="@string/writing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_baseline_edit_24"
+            android:paddingEnd="8dp"
+            android:paddingRight="8dp"
+            android:paddingStart="8dp"
+            android:paddingLeft="8dp" />
 
         <TextView
             android:id="@+id/writing_label"
@@ -116,9 +147,4 @@
             android:layout_height="wrap_content"
             style="@style/Detail" />
     </LinearLayout>
-
-
-
-
-
 </LinearLayout>
