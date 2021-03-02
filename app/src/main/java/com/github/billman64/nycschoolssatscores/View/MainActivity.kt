@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         rv.adapter = SchoolAdapter(ArrayList())
 
         // button action
-        refreshButton.setOnClickListener{
+        refreshButton.setOnClickListener{   //TODO: implement search for individual school (closest match and wildcards to filter or pre-filter the data)
             getSchoolData()
         }
     }
@@ -71,15 +71,16 @@ class MainActivity : AppCompatActivity() {
 
             refreshButton.visibility = View.GONE
         }
-
     }
 
 
     fun getSchoolData(){
 
-        // Progress bar
+        // Progress bar displays
         progress_bar.visibility = View.VISIBLE
         progress_bar.isShown
+
+        //TODO: Refactor to a ViewModel that's observed using a DataBinding or LiveData object
 
         // Retrofit builder
         val schoolApi = Retrofit.Builder()
@@ -123,6 +124,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     Log.d(TAG, " school list count: ${schoolList.count()}")
 
+                    // Update views
                     withContext(Dispatchers.Main){
                         progress_bar.visibility = View.GONE
                         Toast.makeText(applicationContext,"schools found: ${schoolList.count()}", Toast.LENGTH_SHORT).show()
@@ -163,16 +165,12 @@ class MainActivity : AppCompatActivity() {
                 }
                 Log.d(TAG, "message: ${e.message}")
 
-                //TODO: handling for no api key?
-
                 // update UI
                 withContext(Dispatchers.Main){
                     progress_bar.visibility = View.GONE
                     refreshButton.visibility = View.VISIBLE
                 }
-
             }
-
         }
     }
 }

@@ -107,6 +107,7 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
 
                         withContext(Dispatchers.Main){
 
+                            // Update dialog's views with score data
                             d.reading.text = dataObject.get("sat_critical_reading_avg_score").asString
                             d.math.text = dataObject.get("sat_math_avg_score").asString
                             d.writing.text = dataObject.get("sat_writing_avg_score").asString
