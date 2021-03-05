@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Color
+import android.os.Build
+import android.provider.Settings.Global.getString
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -14,8 +16,10 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.github.billman64.nycschoolssatscores.R
+import com.google.gson.JsonObject
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.dialog.*
 import kotlinx.android.synthetic.main.school_item.view.*
@@ -42,6 +46,7 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
         return SchoolViewHolder(itemView)
     }
 
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     override fun onBindViewHolder(holder: SchoolViewHolder, position: Int) {
         val currentItem = schoolList[position]
 
@@ -72,7 +77,7 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
             d.setContentView(R.layout.dialog)
             d.setTitle(R.string.dialog_title)
             d.school.text = holder.schoolView.text
-            d.reading.text = schoolList[position].dbn
+            d.reading.text = schoolList[position].dbn   //
 
             // Retrofit builder
             val scoresApi = Retrofit.Builder()
@@ -102,42 +107,60 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
 
                         Log.d(TAG, " isJsonArray: ${data.isJsonArray()}  isJsonObject: ${data.isJsonObject()}")     // it's a jsonArray
 
-                        val dataObject = data[0].asJsonObject
-                        Log.d(TAG, "dataObject size: ${dataObject.size()}")
-                        val reading = dataObject.get("sat_critical_reading_avg_score").toString()
+                        if(data.size()>0) {
+                            val dataObject =
+                                data[0]?.asJsonObject   //TODO: fix runtime error - need handling for null JsonArray (ie: Academy for Soft. Eng. (AFSE))
+                            Log.d(TAG, "dataObject size: ${dataObject?.size()}")
+                            val reading =
+                                dataObject?.get("sat_critical_reading_avg_score").toString()
+                            Log.d(TAG, "Mean reading score: " + reading)
 
-                        Log.d(TAG, "Mean reading score: " + reading)
+                            withContext(Dispatchers.Main){
 
-                        withContext(Dispatchers.Main){
+                                // Update dialog's views with score data
+                                dataObject?.let{
 
-                            // Update dialog's views with score data
-                            dataObject?.let{
-
-                                // Handling for SAT data unavailable for a particular school
-                                val s = "s"
-                                if(dataObject.get("sat_critical_reading_avg_score").asString == s &&
+                                    // Handling for SAT data unavailable for a particular school (denoted with an "s")
+                                    //  i.e: Academy for Health Careers
+                                    val s = "s"
+                                    if(dataObject.get("sat_critical_reading_avg_score").asString == s &&
                                         dataObject.get("sat_math_avg_score").asString == s &&
                                         dataObject.get("sat_writing_avg_score").asString == s &&
                                         dataObject.get("num_of_sat_test_takers").asString == s
-                                        ){
-                                    d.noData.visibility = View.VISIBLE
-                                    d.reading.text = Resources.getSystem().getString(R.string.notAvailable)
-                                    d.math.text = Resources.getSystem().getString(R.string.notAvailable)
-                                    d.writing.text = Resources.getSystem().getString(R.string.notAvailable)
-                                } else {
+                                    ){
+                                        Log.d(TAG, "SAT data unavailable. Resulted in 's' data.")
+                                        d.noData.visibility = View.VISIBLE
+                                        d.reading.text = s
+                                        d.math.text = s
+                                        d.writing.text = s
+                                        d.test_takers.text = s
+                                    } else {
 
-                                    // Normal case - display SAT data
-                                    d.reading.text =
-                                        dataObject.get("sat_critical_reading_avg_score").asString
-                                    d.math.text = dataObject.get("sat_math_avg_score").asString
-                                    d.writing.text =
-                                        dataObject.get("sat_writing_avg_score").asString
-                                    d.test_takers.text =
-                                        dataObject.get("num_of_sat_test_takers").asString
+                                        // Normal case - display SAT data
+                                        d.reading.text =
+                                            dataObject.get("sat_critical_reading_avg_score").asString   //TODO: refactor to reduce code here
+                                        d.math.text = dataObject.get("sat_math_avg_score").asString
+                                        d.writing.text =
+                                            dataObject.get("sat_writing_avg_score").asString
+                                        d.test_takers.text =
+                                            dataObject.get("num_of_sat_test_takers").asString
+                                    }
+                                    d.show()
                                 }
-                                d.show()
+
                             }
 
+                        } else{
+                            withContext(Dispatchers.Main) {
+                                Log.d(TAG, "Data response is empty for this school")
+                                d.noData.visibility = View.VISIBLE
+                                val na = holder.schoolView.context.getString(R.string.notAvailable)
+                                d.reading.text = na
+                                d.math.text = na
+                                d.writing.text = na
+                                d.test_takers.text = na
+                                d.show()
+                            }
                         }
                     }
 
