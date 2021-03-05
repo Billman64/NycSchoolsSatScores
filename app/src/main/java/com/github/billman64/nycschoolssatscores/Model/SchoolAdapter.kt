@@ -1,8 +1,10 @@
 package com.github.billman64.nycschoolssatscores.Model
 
 import android.app.Dialog
+import android.app.PendingIntent.getActivity
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.Color
 import android.util.Log
 import android.util.TypedValue
@@ -25,6 +27,7 @@ import retrofit2.Retrofit
 import retrofit2.awaitResponse
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.Exception
+import java.security.AccessController.getContext
 
 class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adapter<SchoolAdapter.SchoolViewHolder>() {
     val TAG:String = "SAT data demo" + this.javaClass.simpleName
@@ -108,11 +111,33 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
                         withContext(Dispatchers.Main){
 
                             // Update dialog's views with score data
-                            d.reading.text = dataObject.get("sat_critical_reading_avg_score").asString
-                            d.math.text = dataObject.get("sat_math_avg_score").asString
-                            d.writing.text = dataObject.get("sat_writing_avg_score").asString
-                            d.test_takers.text = dataObject.get("num_of_sat_test_takers").asString
-                            d.show()
+                            dataObject?.let{
+
+                                // Handling for SAT data unavailable for a particular school
+                                val s = "s"
+                                if(dataObject.get("sat_critical_reading_avg_score").asString == s &&
+                                        dataObject.get("sat_math_avg_score").asString == s &&
+                                        dataObject.get("sat_writing_avg_score").asString == s &&
+                                        dataObject.get("num_of_sat_test_takers").asString == s
+                                        ){
+                                    d.noData.visibility = View.VISIBLE
+                                    d.reading.text = Resources.getSystem().getString(R.string.notAvailable)
+                                    d.math.text = Resources.getSystem().getString(R.string.notAvailable)
+                                    d.writing.text = Resources.getSystem().getString(R.string.notAvailable)
+                                } else {
+
+                                    // Normal case - display SAT data
+                                    d.reading.text =
+                                        dataObject.get("sat_critical_reading_avg_score").asString
+                                    d.math.text = dataObject.get("sat_math_avg_score").asString
+                                    d.writing.text =
+                                        dataObject.get("sat_writing_avg_score").asString
+                                    d.test_takers.text =
+                                        dataObject.get("num_of_sat_test_takers").asString
+                                }
+                                d.show()
+                            }
+
                         }
                     }
 

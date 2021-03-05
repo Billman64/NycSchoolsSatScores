@@ -25,6 +25,16 @@
         android:paddingEnd="16dp"
         android:paddingRight="16dp" />
 
+    <TextView
+        android:id="@+id/noData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/noSatData"
+        tools:text="@string/noSatData"
+        style="@style/Error"
+        android:padding="16dp"
+        android:visibility="gone"/>
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

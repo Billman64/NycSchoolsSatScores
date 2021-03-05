@@ -64,12 +64,14 @@ class MainActivity : AppCompatActivity() {
 
         // If there is data to restore from, then populate the recyclerView with it.
         restoreList?.let{
-            schoolList = restoreList
-            val rv:RecyclerView = findViewById(R.id.recyclerView)
-            rv.layoutManager = LinearLayoutManager(this)
-            rv.adapter = SchoolAdapter(restoreList)
+            if(restoreList.count()>0) {
+                schoolList = restoreList
+                val rv: RecyclerView = findViewById(R.id.recyclerView)
+                rv.layoutManager = LinearLayoutManager(this)
+                rv.adapter = SchoolAdapter(restoreList)
 
-            refreshButton.visibility = View.GONE
+                refreshButton.visibility = View.GONE
+            }
         }
     }
 
