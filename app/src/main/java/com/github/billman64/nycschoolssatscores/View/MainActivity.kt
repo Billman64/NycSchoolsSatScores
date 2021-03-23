@@ -36,6 +36,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        mainLayout.setBackgroundResource(R.mipmap.definition)
+
         // Log whether or not retrieving data from a prior activity instance.
         savedInstanceState?.let{Log.d(TAG, "onCreate() with a savedInstanceState")} ?: Log.d(TAG, "onCreate()")
 
@@ -45,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         rv.adapter = SchoolAdapter(ArrayList())
 
         // button action
-        refreshButton.setOnClickListener{   //TODO: implement search for individual school (closest match and wildcards to filter or pre-filter the data)
+        refreshButton.setOnClickListener{   //TODO: new feature - implement search for individual school (closest match and wildcards to filter or pre-filter the data)
             getSchoolData()
         }
     }
