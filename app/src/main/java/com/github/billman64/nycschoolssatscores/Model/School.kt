@@ -28,9 +28,14 @@ data class School(var dbn:String, var schoolName:String): Parcelable{
     }
 
 
-    override fun writeToParcel(dest: Parcel?, flags: Int) {
-        dest?.writeString(dbn)
-        dest?.writeString(schoolName)
+//    override fun writeToParcel(dest: Parcel?, flags: Int) {
+//        dest?.writeString(dbn)
+//        dest?.writeString(schoolName)
+//    }
+
+    override fun writeToParcel(p0: Parcel, p1: Int) {
+        p0?.writeString(dbn)
+        p0?.writeString(schoolName)
     }
 
     override fun describeContents(): Int {

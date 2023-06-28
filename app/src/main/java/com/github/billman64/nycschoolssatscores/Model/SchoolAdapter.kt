@@ -20,9 +20,9 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.github.billman64.nycschoolssatscores.R
 import com.google.gson.JsonObject
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.dialog.*
-import kotlinx.android.synthetic.main.school_item.view.*
+//import kotlinx.android.synthetic.main.activity_main.*
+//import kotlinx.android.synthetic.main.dialog.*
+//import kotlinx.android.synthetic.main.school_item.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -38,7 +38,9 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
 
     class SchoolViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         // View references of an individual item
-        val schoolView:TextView = itemView.school
+
+//        val schoolView:TextView = itemView.school // orig.
+        val schoolView = itemView.findViewById<View>(R.id.school)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SchoolViewHolder {
@@ -46,22 +48,23 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
         return SchoolViewHolder(itemView)
     }
 
-    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+
     override fun onBindViewHolder(holder: SchoolViewHolder, position: Int) {
         val currentItem = schoolList[position]
 
-        holder.schoolView.text = currentItem.schoolName
+        val schoolView = holder.itemView.findViewById<TextView>(R.id.school)
+        schoolView.text = currentItem.schoolName
 
         // Dynamic text resizing
-        when(holder.schoolView.text.length){
+        when(schoolView.text.length){
             in 1..29 -> {
-                holder.schoolView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+                schoolView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
             }
             in 30..40 -> {
-                holder.schoolView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+                schoolView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
             }
             in 41..150 -> {
-                holder.schoolView. setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+                schoolView. setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
             }
         }
 
@@ -70,14 +73,33 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
 
         // Make item clickable, calling dialog with SAT scores
         holder.itemView.setOnClickListener( View.OnClickListener {
-            Log.d(TAG, "item clicked: ${holder.schoolView.text} dbn: ${schoolList[position].dbn}  pos: ${holder.adapterPosition} length: ${holder.schoolView.length()} textSize: ${holder.schoolView.textSize}")
+
+            Log.d(TAG, "item clicked: ${schoolView.text} dbn: ${schoolList[position].dbn}  pos: ${holder.adapterPosition} length: ${schoolView.text.length} textSize: ${schoolView.textSize}")
 
             // Setup dialog
             val d = Dialog(holder.schoolView.context)
             d.setContentView(R.layout.dialog)
             d.setTitle(R.string.dialog_title)
-            d.school.text = holder.schoolView.text
-            d.reading.text = schoolList[position].dbn   //
+            val dialogSchool = d.findViewById<TextView>(R.id.school)
+            val dialogReading = d.findViewById<TextView>(R.id.reading)
+            val dialogMath = d.findViewById<TextView>(R.id.math)
+            val dialogWriting = d.findViewById<TextView>(R.id.writing)
+            val dialogTestTakers = d.findViewById<TextView>(R.id.test_takers)
+            val dialogNoData = d.findViewById<TextView>(R.id.noData)
+
+            dialogSchool.text = schoolView.text
+            dialogReading.text = schoolList[position].dbn   //
+            //TODO: implement ViewBind to replace findViewById's
+
+//            @Composable
+//            fun SatDialogBox(
+//                onDismissRequest: () -> Unit,
+//                Dialog(
+//                    onDismissRequest = {openDialog.value = false}
+//                )
+//            ){
+//            }
+
 
             // Retrofit builder
             val scoresApi = Retrofit.Builder()
@@ -115,6 +137,7 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
                                 dataObject?.get("sat_critical_reading_avg_score").toString()
                             Log.d(TAG, "Mean reading score: " + reading)
 
+
                             withContext(Dispatchers.Main){
 
                                 // Update dialog's views with score data
@@ -129,20 +152,20 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
                                         dataObject.get("num_of_sat_test_takers").asString == s
                                     ){
                                         Log.d(TAG, "SAT data unavailable. Resulted in 's' data.")
-                                        d.noData.visibility = View.VISIBLE
-                                        d.reading.text = s
-                                        d.math.text = s
-                                        d.writing.text = s
-                                        d.test_takers.text = s
+                                        dialogNoData.visibility = View.VISIBLE
+                                        dialogReading.text = s
+                                        dialogMath.text = s
+                                        dialogWriting.text = s
+                                        dialogTestTakers.text = s
                                     } else {
 
                                         // Normal case - display SAT data
-                                        d.reading.text =
+                                        dialogReading.text =
                                             dataObject.get("sat_critical_reading_avg_score").asString   //TODO: refactor to reduce code here
-                                        d.math.text = dataObject.get("sat_math_avg_score").asString
-                                        d.writing.text =
+                                        dialogMath.text = dataObject.get("sat_math_avg_score").asString
+                                        dialogWriting.text =
                                             dataObject.get("sat_writing_avg_score").asString
-                                        d.test_takers.text =
+                                        dialogTestTakers.text =
                                             dataObject.get("num_of_sat_test_takers").asString
                                     }
                                     d.show()
@@ -153,12 +176,12 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
                         } else{
                             withContext(Dispatchers.Main) {
                                 Log.d(TAG, "Data response is empty for this school")
-                                d.noData.visibility = View.VISIBLE
+                                dialogNoData.visibility = View.VISIBLE
                                 val na = holder.schoolView.context.getString(R.string.notAvailable)
-                                d.reading.text = na
-                                d.math.text = na
-                                d.writing.text = na
-                                d.test_takers.text = na
+                                dialogReading.text = na
+                                dialogMath.text = na
+                                dialogWriting.text = na
+                                dialogTestTakers.text = na
                                 d.show()
                             }
                         }

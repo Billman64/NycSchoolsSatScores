@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -11,7 +12,7 @@ import com.github.billman64.nycschoolssatscores.Model.School
 import com.github.billman64.nycschoolssatscores.Model.SchoolAdapter
 import com.github.billman64.nycschoolssatscores.Model.SchoolsAPI
 import com.github.billman64.nycschoolssatscores.R
-import kotlinx.android.synthetic.main.activity_main.*
+//import kotlinx.android.synthetic.main.activity_main.* // synthetics deprecated
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -36,6 +37,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val mainLayout = findViewById<View>(R.id.mainLayout)
         mainLayout.setBackgroundResource(R.mipmap.definition)
 
         // Log whether or not retrieving data from a prior activity instance.
@@ -47,6 +49,7 @@ class MainActivity : AppCompatActivity() {
         rv.adapter = SchoolAdapter(ArrayList())
 
         // button action
+        val refreshButton: Button = findViewById<Button>(R.id.refreshButton)
         refreshButton.setOnClickListener{   //TODO: new feature - implement search for individual school (closest match and wildcards to filter or pre-filter the data)
             getSchoolData()
         }
@@ -72,6 +75,7 @@ class MainActivity : AppCompatActivity() {
                 rv.layoutManager = LinearLayoutManager(this)
                 rv.adapter = SchoolAdapter(restoreList)
 
+                val refreshButton = findViewById<View>(R.id.refreshButton)
                 refreshButton.visibility = View.GONE
             }
         }
@@ -81,8 +85,9 @@ class MainActivity : AppCompatActivity() {
     fun getSchoolData(){
 
         // Progress bar displays
-        progress_bar.visibility = View.VISIBLE
-        progress_bar.isShown
+        val progressBar = findViewById<View>(R.id.progress_bar)
+        progressBar.visibility = View.VISIBLE
+        progressBar.isShown
 
         //TODO: Refactor to a ViewModel that's observed using a DataBinding or LiveData object
 
@@ -97,10 +102,13 @@ class MainActivity : AppCompatActivity() {
         // Coroutine for API call
         GlobalScope.launch(Dispatchers.IO){
             Log.d(TAG, "Coroutine - calling API for SAT scores.")
+            val refreshButton = findViewById<View>(R.id.refreshButton)
 
             try{
                 val responseSchools = schoolApi.getSchools().awaitResponse()
                 Log.d(TAG, " response received. code: ${responseSchools.code()} size: ${responseSchools.message()}")
+
+
 
                 if(responseSchools.isSuccessful){
 
@@ -130,10 +138,12 @@ class MainActivity : AppCompatActivity() {
 
                     // Update views
                     withContext(Dispatchers.Main){
-                        progress_bar.visibility = View.GONE
+                        progressBar.visibility = View.GONE
                         Toast.makeText(applicationContext,"schools found: ${schoolList.count()}", Toast.LENGTH_SHORT).show()
                         // sort
                         schoolList.sortBy { it.schoolName }
+
+                        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
                         recyclerView.adapter = SchoolAdapter(schoolList)
 
                         refreshButton.visibility = View.GONE
@@ -156,7 +166,7 @@ class MainActivity : AppCompatActivity() {
 
                     // update UI
                     withContext(Dispatchers.Main){
-                        progress_bar.visibility = View.GONE
+                        progressBar.visibility = View.GONE
                         refreshButton.visibility = View.VISIBLE
                     }
                 }
@@ -171,7 +181,7 @@ class MainActivity : AppCompatActivity() {
 
                 // update UI
                 withContext(Dispatchers.Main){
-                    progress_bar.visibility = View.GONE
+                    progressBar.visibility = View.GONE
                     refreshButton.visibility = View.VISIBLE
                 }
             }

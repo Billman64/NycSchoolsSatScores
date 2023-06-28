@@ -10,5 +10,6 @@
     <string name="button_text">View schools</string>
     <string name="noSatData">No SAT data available for this school</string>
     <string name="notAvailable">n/a</string>
+    <string name="title_activity_main">MainActivity</string>
 
 </resources>
