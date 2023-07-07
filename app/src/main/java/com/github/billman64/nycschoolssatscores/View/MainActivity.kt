@@ -32,28 +32,31 @@ import java.lang.Exception
 class MainActivity : AppCompatActivity() {
     val TAG:String = "SAT data demo" + this.javaClass.simpleName
     private var schoolList = ArrayList<School>()
-    var binding:ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)   // will be used to replace findViewById's
+    private lateinit var binding:ActivityMainBinding   // will be used to replace findViewById's
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-//        val mainLayout = findViewById<View>(R.id.mainLayout)
-        val mainLayout = binding.mainLayout
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)        // replaces: setContentView(R.layout.activity_main)
+
+        val mainLayout = binding.mainLayout     // replaces: val mainLayout = findViewById<View>(R.id.mainLayout)
         mainLayout.setBackgroundResource(R.mipmap.definition)
 
         // Log whether or not retrieving data from a prior activity instance.
         savedInstanceState?.let{Log.d(TAG, "onCreate() with a savedInstanceState")} ?: Log.d(TAG, "onCreate()")
 
         // set up recyclerView, which is used to hold list of tappable school names
-        val rv:RecyclerView = findViewById(R.id.recyclerView)
+            val rv:RecyclerView = binding.recyclerView      // replaces: val rv:RecyclerView = findViewById(R.id.recyclerView)
+
 
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = SchoolAdapter(ArrayList())
 
         // button action
-        val refreshButton: Button = findViewById<Button>(R.id.refreshButton)
+        val refreshButton: Button = binding.refreshButton        // replaces: val refreshButton: Button = findViewById<Button>(R.id.refreshButton)
+
         refreshButton.setOnClickListener{   //TODO: new feature - implement search for individual school (closest match and wildcards to filter or pre-filter the data)
             getSchoolData()
         }
@@ -75,11 +78,13 @@ class MainActivity : AppCompatActivity() {
         restoreList?.let{
             if(restoreList.count()>0) {
                 schoolList = restoreList
-                val rv: RecyclerView = findViewById(R.id.recyclerView)
+                val rv: RecyclerView = binding.recyclerView      // replaces: val rv: RecyclerView = findViewById(R.id.recyclerView)
+
                 rv.layoutManager = LinearLayoutManager(this)
                 rv.adapter = SchoolAdapter(restoreList)
 
-                val refreshButton = findViewById<View>(R.id.refreshButton)
+                val refreshButton = binding.refreshButton     // replaces: val refreshButton = findViewById<View>(R.id.refreshButton)
+
                 refreshButton.visibility = View.GONE
             }
         }
@@ -89,7 +94,8 @@ class MainActivity : AppCompatActivity() {
     fun getSchoolData(){
 
         // Progress bar displays
-        val progressBar = findViewById<View>(R.id.progress_bar)
+        val progressBar = binding.progressBar     // replaces: val progressBar = findViewById<View>(R.id.progress_bar)
+
         progressBar.visibility = View.VISIBLE
         progressBar.isShown
 
@@ -103,16 +109,14 @@ class MainActivity : AppCompatActivity() {
             .create(SchoolsAPI::class.java)
         Log.d(TAG, "Retrofit for schools api created: $schoolApi.toString()")
 
-        // Coroutine for API call
-        GlobalScope.launch(Dispatchers.IO){
+        // Coroutine for API call. Dispatcher used to prevent leak from directly running GlobalScope.
+        GlobalScope.launch(Dispatchers.IO){         //TODO: Best practice: Make scope referenceable for more testing coverage
             Log.d(TAG, "Coroutine - calling API for SAT scores.")
-            val refreshButton = findViewById<View>(R.id.refreshButton)
+            val refreshButton = binding.refreshButton      // replaces: val refreshButton = findViewById<View>(R.id.refreshButton)
 
             try{
                 val responseSchools = schoolApi.getSchools().awaitResponse()
                 Log.d(TAG, " response received. code: ${responseSchools.code()} size: ${responseSchools.message()}")
-
-
 
                 if(responseSchools.isSuccessful){
 
@@ -147,7 +151,8 @@ class MainActivity : AppCompatActivity() {
                         // sort
                         schoolList.sortBy { it.schoolName }
 
-                        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+                        val recyclerView = binding.recyclerView        // replaces: val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+
                         recyclerView.adapter = SchoolAdapter(schoolList)
 
                         refreshButton.visibility = View.GONE
@@ -175,7 +180,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-            } catch(e:Exception){
+            } catch(e:Exception){   // connection error handling
                 if(e.toString().length>=50) {
                     Log.d(TAG, "Net error: ${e.toString().substring(0,50)}")
                 } else {
@@ -187,6 +192,7 @@ class MainActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main){
                     progressBar.visibility = View.GONE
                     refreshButton.visibility = View.VISIBLE
+                    Toast.makeText(applicationContext, getString(R.string.connection_error), Toast.LENGTH_SHORT).show()
                 }
             }
         }
