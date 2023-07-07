@@ -17,6 +17,18 @@ import android.view.animation.AnimationUtils
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+//import androidx.compose.ui.draw.EmptyBuildDrawCacheParams.size
+import androidx.compose.ui.unit.dp
 import androidx.recyclerview.widget.RecyclerView
 import com.github.billman64.nycschoolssatscores.R
 import com.google.gson.JsonObject
@@ -91,14 +103,37 @@ class SchoolAdapter(private val schoolList:ArrayList<School>): RecyclerView.Adap
             dialogReading.text = schoolList[position].dbn   //
             //TODO: implement ViewBind to replace findViewById's
 
-//            @Composable
-//            fun SatDialogBox(
-//                onDismissRequest: () -> Unit,
+
+            @Composable
+            fun SatDialogBox(){
+                var openDialog = remember { mutableStateOf(false)}
+
+                Box(modifier = Modifier.size(8.dp))
+
+
 //                Dialog(
-//                    onDismissRequest = {openDialog.value = false}
-//                )
-//            ){
-//            }
+////                    modifier = Modifier.size(64.dp),
+//                    onDismissRequest = { openDialog = mutableStateOf(false)}
+//                ) {
+//                    Surface(
+//                        modifier = Modifer
+//                            .fillMaxWidth
+//                            .wrapContentHeight(),
+//                        shape = RoundedCornerShape(8.dp)
+//                    )
+//                }
+
+
+//                if(openDialog.value) {
+//                    Dialog(/*onDismissRequest = { openDialog.value = false } */ ) {
+//                        Box(
+//                            Modifier.size(300.dp, 400.dp)
+//                        )
+//                    }
+//                }
+            }
+
+
 
 
             // Retrofit builder

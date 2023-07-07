@@ -12,6 +12,7 @@ import com.github.billman64.nycschoolssatscores.Model.School
 import com.github.billman64.nycschoolssatscores.Model.SchoolAdapter
 import com.github.billman64.nycschoolssatscores.Model.SchoolsAPI
 import com.github.billman64.nycschoolssatscores.R
+import com.github.billman64.nycschoolssatscores.databinding.ActivityMainBinding
 //import kotlinx.android.synthetic.main.activity_main.* // synthetics deprecated
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -31,13 +32,15 @@ import java.lang.Exception
 class MainActivity : AppCompatActivity() {
     val TAG:String = "SAT data demo" + this.javaClass.simpleName
     private var schoolList = ArrayList<School>()
+    var binding:ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)   // will be used to replace findViewById's
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val mainLayout = findViewById<View>(R.id.mainLayout)
+//        val mainLayout = findViewById<View>(R.id.mainLayout)
+        val mainLayout = binding.mainLayout
         mainLayout.setBackgroundResource(R.mipmap.definition)
 
         // Log whether or not retrieving data from a prior activity instance.
@@ -45,6 +48,7 @@ class MainActivity : AppCompatActivity() {
 
         // set up recyclerView, which is used to hold list of tappable school names
         val rv:RecyclerView = findViewById(R.id.recyclerView)
+
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = SchoolAdapter(ArrayList())
 
